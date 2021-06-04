@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['DMD.py'],
-             pathex=['C:\\Users\\taivassalolab\\source\\repos\\DMD\\DMD'],
+             pathex=['C:\\Users\\Public\\DMD Project\\DMDCode2021\\DMD'],
              binaries=[],
              datas=[],
              hiddenimports=[],

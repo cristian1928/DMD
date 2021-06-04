@@ -3,6 +3,7 @@ import numpy as np
 import math
 import os
 
+MAX_POWER = 40
 debug = False
 
 store = False
@@ -26,10 +27,12 @@ torque = []
 power = []
 time = []
 
+index = []
+
 if(not debug):
     print("Working...\n")
 
-file = open(r"C:\Users\taivassalolab\AppData\Roaming\ANTwareII\logs\Device0.txt","r+")
+file = open(r"C:\Users\r.bowers\AppData\Roaming\ANTwareII\logs\Device0.txt","r+")
 
 for line in file:
     if len(line) == 82:
@@ -102,29 +105,52 @@ for i in range(0, len(cadence)):
         print("Torque: " + str(torque[i]))
         print("Power: " + str(power[i]))
 
-#Remove Outliers
-for i in range(0, len(power)-1):
+#Remove Values less than 0
+for i in range(0, len(power)):
     if (power[i] < 0):
-        power.pop(i)
-        time.pop(i)
+        index.append(i)
+        if(debug):
+            print("\n Power Removed has value " + str(power[i]) + " at index " + str(i))
+  
+for ele in sorted(index, reverse = True): 
+    del power[ele]
+    del time[ele]
+if(debug):
+        print("\nElements Deleted: ")
+        print(*index , sep = ", ")
 
-mean = sum(power)/len(power)
-variance = sum([((x - mean) ** 2) for x in power]) / len(power)
-res = variance ** 0.5
-scaleOffset = 3 * res
-yMin = mean - scaleOffset
-yMax = mean + scaleOffset
+#mean = sum(power)/len(power)
+#variance = sum([((x - mean) ** 2) for x in power]) / len(power)
+#res = variance ** 0.5
+#yMax = mean + res
+#if(debug):
+#        print("\nMean: " + str(mean))
+#        print("\Variance: " + str(variance))
+#        print("\Res: " + str(res))
+#        print("\yMax: " + str(yMax))
+#        print("\yMax: " + str(yMax))
 
-for i in range(0, len(power)-1):
-    if (power[i] > yMax) or (power[i] < yMin):
-        power.pop(i)
-        time.pop(i)
+index.clear()
+
+#Remove Outliers
+for i in range(0, len(power)):
+    if (power[i] > MAX_POWER):
+        index.append(i)
+        if(debug):
+            print("\n Power Removed has value " + str(power[i]) + " at index " + str(i))
+
+for ele in sorted(index, reverse = True): 
+    del power[ele]
+    del time[ele]
+if(debug):
+        print("\nElements Deleted: ")
+        print(*index , sep = ", ")
 
 f = open(r"C:\Users\Public\DMD Project\Data\Data.csv","w+")
 f.close()
 
+count = 0
 for i in range(0, len(power)):
-    count = 0
     with open(r"C:\Users\Public\DMD Project\Data\Data.csv", "a") as fileToWrite:
         if count == 0:
             fileToWrite.write("Time , Power\n")
